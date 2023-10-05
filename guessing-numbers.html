@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>猜数字游戏</title>
+    <style>
+        /* 全局样式 */
+        * { box-sizing: border-box; }
+        html, body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            font-size: 16px;
+            line-height: 1.5;
+            background-color: #f0f0f0;
+        }
+        /* 顶部导航栏 */
+        .navbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 50px;
+            background-color: #4CAF50;
+            color: #fff;
+            padding: 0 20px;
+        }
+        .navbar h1 {
+            margin: 0;
+            font-size: 20px;
+            font-weight: bold;
+        }
+        /* 游戏面板 */
+        .game {
+            max-width: 600px;
+            margin: 20px auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .game label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+        .game input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        .game button {
+            width: 100%;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 18px;
+            transition: background-color 0.3s ease;
+        }
+        .game button:hover {
+            background-color: #45a049;
+        }
+        .game button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        .game .hint {
+            color: #999;
+            margin-bottom: 10px;
+        }
+        .game .result {
+            font-weight: bold;
+            margin-top: 20px;
+            text-align: center;
+        }
+        .game .status {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .game .status.success {
+            color: green;
+        }
+        .game .status.fail {
+            color: red;
+        }
+        /* 响应式布局 */
+        @media (max-width: 767px) {
+            .game {
+                padding: 10px;
+            }
+            .game label,
+            .game input[type="number"],
+            .game button,
+            .game .hint,
+            .game .result,
+            .game .status {
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="navbar">
+        <h1>猜数字游戏</h1>
+    </header>
+    <main>
+        <div class="game">
+            <label for="guessInput">请输入一个 1 到 100 之间的数字：</label>
+            <input type="number" id="guessInput">
+            <button onclick="guessNumber();" id="guessButton" disabled>猜！</button>
+            <p class="hint" id="hint"></p>
+            <div class="result" id="result"></div>
+            <div class="status" id="status"></div>
+
+            <hr>
+
+            <label for="guessCount">你要猜测的次数（请输入一个正整数）：</label>
+            <input type="number" id="guessCount">
+            <button onclick="startNewGame()">开始新游戏</button>
+        </div>
+    </main>
+    <script>
+        var targetNumber;
+        var remainingGuesses;
+
+        function generateTargetNumber() {
+            targetNumber = Math.floor(Math.random() * 100) + 1;
+        }
+
+        function startNewGame() {
+            generateTargetNumber();
+            remainingGuesses = parseInt(document.getElementById("guessCount").value);
+
+            document.getElementById("status").innerHTML = "开始新游戏！";
+            document.getElementById("hint").innerHTML = "";
+            document.getElementById("result").innerHTML = "";
+            document.getElementById("guessInput").value = "";
+
+            document.getElementById("guessButton").disabled = false;
+        }
+
+        function guessNumber() {
+            var guess = parseInt(document.getElementById("guessInput").value);
+
+            if (isNaN(guess)) {
+                document.getElementById("hint").innerHTML = "请输入有效的数字！";
+                return;
+            }
+
+            if (guess < 1 || guess > 100) {
+                document.getElementById("hint").innerHTML = "请输入 1 到 100 之间的数字！";
+                return;
+            }
+
+            remainingGuesses--;
+
+            if (guess === targetNumber) {
+                document.getElementById("status").innerHTML = "恭喜你，猜对了！";
+                document.getElementById("result").innerHTML = "目标数字是：" + targetNumber;
+                document.getElementById("guessButton").disabled = true;
+            } else if (remainingGuesses === 0) {
+                document.getElementById("status").innerHTML = "游戏结束，你没有猜对！";
+                document.getElementById("result").innerHTML = "目标数字是：" + targetNumber;
+                document.getElementById("guessButton").disabled = true;
+            } else if (guess < targetNumber) {
+                document.getElementById("hint").innerHTML = "猜小了！还剩余 " + remainingGuesses + " 次机会。";
+            } else if (guess > targetNumber) {
+                document.getElementById("hint").innerHTML = "猜大了！还剩余 " + remainingGuesses + " 次机会。";
+            }
+        }
+
+        document.getElementById("guessInput").addEventListener("input", function () {
+            var guessInput = document.getElementById("guessInput");
+
+            if (guessInput.value !== "") {
+                document.getElementById("guessButton").disabled = false;
+            } else {
+                document.getElementById("guessButton").disabled = true;
+            }
+        });
+    </script>
+</body>
+</html>
